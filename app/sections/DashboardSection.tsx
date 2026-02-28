@@ -8,17 +8,6 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { FiBriefcase, FiUsers, FiMessageSquare, FiCheckCircle, FiPlus, FiArrowRight, FiClock } from 'react-icons/fi'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
-interface Job {
-  id: string
-  title: string
-  department: string
-  description: string
-  requirements: string[]
-  status: 'active' | 'closed' | 'draft'
-  createdAt: string
-  candidates: Candidate[]
-}
-
 interface Candidate {
   id: string
   name: string
@@ -32,46 +21,42 @@ interface Candidate {
   shortlisted: boolean
 }
 
+interface Job {
+  id: string
+  title: string
+  department: string
+  description: string
+  requirements: string[]
+  status: 'active' | 'closed' | 'draft'
+  createdAt: string
+  candidates: Candidate[]
+}
+
 interface DashboardProps {
   jobs: Job[]
   onNavigate: (page: string) => void
+  onSelectJob: (jobId: string) => void
 }
 
-export default function DashboardSection({ jobs, onNavigate }: DashboardProps) {
+export default function DashboardSection({ jobs, onNavigate, onSelectJob }: DashboardProps) {
   const allCandidates = jobs.flatMap(j => Array.isArray(j.candidates) ? j.candidates : [])
   const openPositions = jobs.filter(j => j.status === 'active').length
   const totalCandidates = allCandidates.length
-  const interviewsCompleted = allCandidates.filter(c => c.stage === 'interviewed' || c.stage === 'evaluation' || c.stage === 'evaluated' || c.stage === 'hired').length
+  const interviewsDone = allCandidates.filter(c => c.interviewResult).length
   const offersMade = allCandidates.filter(c => c.stage === 'hired').length
 
   const pipelineData = [
-    { stage: 'New', count: allCandidates.filter(c => c.stage === 'new').length },
-    { stage: 'Screening', count: allCandidates.filter(c => c.stage === 'screening' || c.stage === 'screened').length },
-    { stage: 'Interview', count: allCandidates.filter(c => c.stage === 'interview' || c.stage === 'interviewed').length },
-    { stage: 'Evaluated', count: allCandidates.filter(c => c.stage === 'evaluation' || c.stage === 'evaluated').length },
-    { stage: 'Hired', count: allCandidates.filter(c => c.stage === 'hired').length },
+    { stage: 'New', count: allCandidates.filter(c => c.stage === 'new').length, fill: 'hsl(var(--chart-1))' },
+    { stage: 'Screened', count: allCandidates.filter(c => ['screened', 'screening'].includes(c.stage)).length, fill: 'hsl(var(--chart-2))' },
+    { stage: 'Interviewed', count: allCandidates.filter(c => ['interviewed', 'interview'].includes(c.stage)).length, fill: 'hsl(var(--chart-3))' },
+    { stage: 'Evaluated', count: allCandidates.filter(c => ['evaluated', 'evaluation'].includes(c.stage)).length, fill: 'hsl(var(--chart-4))' },
+    { stage: 'Hired', count: allCandidates.filter(c => c.stage === 'hired').length, fill: 'hsl(var(--chart-5))' },
   ]
 
-  const recentActivities: { text: string; time: string; type: string }[] = []
-  allCandidates.forEach(c => {
-    if (c.stage === 'screened' && c.screeningResult) {
-      recentActivities.push({ text: `${c.name} resume screened`, time: 'Recently', type: 'screening' })
-    }
-    if ((c.stage === 'interviewed' || c.stage === 'evaluation' || c.stage === 'evaluated') && c.interviewResult) {
-      recentActivities.push({ text: `${c.name} interview completed`, time: 'Recently', type: 'interview' })
-    }
-    if (c.stage === 'evaluated' && c.evaluationResult) {
-      recentActivities.push({ text: `${c.name} evaluation finished`, time: 'Recently', type: 'evaluation' })
-    }
-    if (c.stage === 'hired') {
-      recentActivities.push({ text: `${c.name} marked as hired`, time: 'Recently', type: 'hired' })
-    }
-  })
-
-  const statCards = [
+  const stats = [
     { label: 'Open Positions', value: openPositions, icon: FiBriefcase, color: 'text-blue-600' },
     { label: 'Total Candidates', value: totalCandidates, icon: FiUsers, color: 'text-purple-600' },
-    { label: 'Interviews Done', value: interviewsCompleted, icon: FiMessageSquare, color: 'text-amber-600' },
+    { label: 'Interviews Done', value: interviewsDone, icon: FiMessageSquare, color: 'text-amber-600' },
     { label: 'Offers Made', value: offersMade, icon: FiCheckCircle, color: 'text-green-600' },
   ]
 
@@ -93,9 +78,9 @@ export default function DashboardSection({ jobs, onNavigate }: DashboardProps) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {statCards.map((stat) => (
+        {stats.map((stat) => (
           <Card key={stat.label} className="backdrop-blur-[16px] bg-card/75 border border-white/[0.18] shadow-md">
-            <CardContent className="pt-6">
+            <CardContent className="p-6 pt-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">{stat.label}</p>
@@ -122,8 +107,10 @@ export default function DashboardSection({ jobs, onNavigate }: DashboardProps) {
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis dataKey="stage" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
                   <YAxis tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} allowDecimals={false} />
-                  <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '0.5rem' }} />
-                  <Bar dataKey="count" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
+                  <Tooltip
+                    contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '0.5rem', fontSize: 12 }}
+                  />
+                  <Bar dataKey="count" radius={[6, 6, 0, 0]} fill="hsl(var(--primary))" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -136,7 +123,7 @@ export default function DashboardSection({ jobs, onNavigate }: DashboardProps) {
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-[260px]">
-              {recentActivities.length === 0 ? (
+              {allCandidates.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-[200px] text-muted-foreground">
                   <FiClock className="h-8 w-8 mb-2 opacity-40" />
                   <p className="text-sm">No recent activity yet</p>
@@ -144,18 +131,16 @@ export default function DashboardSection({ jobs, onNavigate }: DashboardProps) {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {recentActivities.slice(0, 10).map((activity, idx) => (
-                    <div key={idx} className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent/50 transition-colors">
-                      <div className="mt-0.5">
-                        {activity.type === 'screening' && <FiCheckCircle className="h-4 w-4 text-blue-500" />}
-                        {activity.type === 'interview' && <FiMessageSquare className="h-4 w-4 text-purple-500" />}
-                        {activity.type === 'evaluation' && <FiCheckCircle className="h-4 w-4 text-amber-500" />}
-                        {activity.type === 'hired' && <FiCheckCircle className="h-4 w-4 text-green-500" />}
+                  {allCandidates.slice(0, 10).map((c) => (
+                    <div key={c.id} className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-accent/50">
+                      <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-semibold flex-shrink-0">
+                        {c.name.split(' ').map(n => n[0]).join('')}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm truncate">{activity.text}</p>
-                        <p className="text-xs text-muted-foreground">{activity.time}</p>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium truncate">{c.name}</p>
+                        <p className="text-xs text-muted-foreground capitalize">{c.stage}</p>
                       </div>
+                      <Badge variant="secondary" className="text-[10px] capitalize">{c.stage}</Badge>
                     </div>
                   ))}
                 </div>
@@ -165,23 +150,32 @@ export default function DashboardSection({ jobs, onNavigate }: DashboardProps) {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {jobs.filter(j => j.status === 'active').slice(0, 3).map(job => (
-          <Card key={job.id} className="backdrop-blur-[16px] bg-card/75 border border-white/[0.18] shadow-md hover:shadow-lg transition-shadow cursor-pointer" onClick={() => onNavigate('candidates')}>
-            <CardContent className="pt-5 pb-4">
-              <div className="flex items-center justify-between mb-2">
-                <Badge variant="secondary" className="text-xs">{job.department}</Badge>
-                <Badge variant={job.status === 'active' ? 'default' : 'secondary'} className="text-xs capitalize">{job.status}</Badge>
-              </div>
-              <h3 className="font-semibold text-sm mt-2">{job.title}</h3>
-              <div className="flex items-center justify-between mt-3">
-                <span className="text-xs text-muted-foreground">{Array.isArray(job.candidates) ? job.candidates.length : 0} candidates</span>
-                <FiArrowRight className="h-4 w-4 text-muted-foreground" />
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {jobs.filter(j => j.status === 'active').length > 0 && (
+        <div>
+          <h2 className="text-lg font-semibold mb-3">Active Job Postings</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {jobs.filter(j => j.status === 'active').map((job) => (
+              <Card
+                key={job.id}
+                className="backdrop-blur-[16px] bg-card/75 border border-white/[0.18] shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => onSelectJob(job.id)}
+              >
+                <CardContent className="p-6 pt-5 pb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <Badge variant="secondary" className="text-xs">{job.department}</Badge>
+                    <Badge className="text-xs capitalize">{job.status}</Badge>
+                  </div>
+                  <h3 className="font-semibold text-sm mt-2">{job.title}</h3>
+                  <div className="flex items-center justify-between mt-3">
+                    <span className="text-xs text-muted-foreground">{Array.isArray(job.candidates) ? job.candidates.length : 0} candidates</span>
+                    <FiArrowRight className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

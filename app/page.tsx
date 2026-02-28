@@ -1,11 +1,7 @@
 'use client'
 
 import React, { useState, useCallback } from 'react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Switch } from '@/components/ui/switch'
-import { Label } from '@/components/ui/label'
 import { FiBriefcase, FiFileText, FiUsers, FiBarChart2, FiChevronRight, FiChevronLeft } from 'react-icons/fi'
 
 import DashboardSection from './sections/DashboardSection'
@@ -15,7 +11,6 @@ import CandidateDetailSection from './sections/CandidateDetailSection'
 import EvaluationsSection from './sections/EvaluationsSection'
 
 // --- Types ---
-
 interface Candidate {
   id: string
   name: string
@@ -41,7 +36,6 @@ interface Job {
 }
 
 // --- Sample Data ---
-
 const SAMPLE_JOBS: Job[] = [
   {
     id: 'job-1',
@@ -82,44 +76,13 @@ const SAMPLE_JOBS: Job[] = [
 ]
 
 // --- Agent Info ---
-
 const AGENTS = [
   { id: '69a295bfbb857be96e3e20e3', name: 'Resume Screener', purpose: 'Analyzes resumes against job requirements' },
   { id: '69a295bf42fb78f6798a6c1d', name: 'Interview Conductor', purpose: 'Runs structured AI interviews' },
   { id: '69a295d20082f39a3a37ce52', name: 'Candidate Evaluator', purpose: 'Generates evaluation reports with scoring' },
 ]
 
-// --- ErrorBoundary ---
-
-class ErrorBoundary extends React.Component<
-  { children: React.ReactNode },
-  { hasError: boolean; error: string }
-> {
-  constructor(props: { children: React.ReactNode }) {
-    super(props)
-    this.state = { hasError: false, error: '' }
-  }
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error: error.message }
-  }
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
-          <div className="text-center p-8 max-w-md">
-            <h2 className="text-xl font-semibold mb-2">Something went wrong</h2>
-            <p className="text-muted-foreground mb-4 text-sm">{this.state.error}</p>
-            <button onClick={() => this.setState({ hasError: false, error: '' })} className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm">Try again</button>
-          </div>
-        </div>
-      )
-    }
-    return this.props.children
-  }
-}
-
 // --- Nav items ---
-
 const NAV_ITEMS = [
   { key: 'dashboard', label: 'Dashboard', icon: FiBriefcase },
   { key: 'jobs', label: 'Job Postings', icon: FiFileText },
@@ -128,7 +91,6 @@ const NAV_ITEMS = [
 ]
 
 // --- Main Page ---
-
 export default function Page() {
   const [jobs, setJobs] = useState<Job[]>(SAMPLE_JOBS)
   const [page, setPage] = useState('dashboard')
@@ -136,7 +98,6 @@ export default function Page() {
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [activeAgentId, setActiveAgentId] = useState<string | null>(null)
-  const [sampleData, setSampleData] = useState(false)
 
   const selectedJob = jobs.find(j => j.id === selectedJobId) || null
 
@@ -204,9 +165,7 @@ export default function Page() {
       parts.push({ label: 'Job Postings', onClick: () => handleNavigate('jobs') })
       parts.push({ label: selectedJob.title })
     }
-    if (page === 'candidates' && !selectedJob) {
-      parts.push({ label: 'Candidates' })
-    }
+    if (page === 'candidates' && !selectedJob) parts.push({ label: 'Candidates' })
     if (page === 'candidateDetail' && selectedJob && selectedCandidate) {
       parts.push({ label: 'Job Postings', onClick: () => handleNavigate('jobs') })
       parts.push({ label: selectedJob.title, onClick: () => { setSelectedCandidate(null); setPage('candidates') } })
@@ -217,137 +176,123 @@ export default function Page() {
   }
 
   return (
-    <ErrorBoundary>
-      <div className="min-h-screen bg-background text-foreground flex">
-        {/* Sidebar */}
-        <aside className={`flex-shrink-0 border-r border-border bg-card/50 backdrop-blur-sm transition-all duration-300 flex flex-col ${sidebarOpen ? 'w-60' : 'w-16'}`}>
-          <div className="p-4 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
-              <FiBriefcase className="h-4 w-4 text-primary-foreground" />
-            </div>
-            {sidebarOpen && <span className="font-bold text-lg tracking-tight">HireFlow</span>}
+    <div className="min-h-screen bg-background text-foreground flex">
+      {/* Sidebar */}
+      <aside className={`flex-shrink-0 border-r border-border bg-card/50 backdrop-blur-sm transition-all duration-300 flex flex-col ${sidebarOpen ? 'w-60' : 'w-16'}`}>
+        <div className="p-4 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
+            <FiBriefcase className="h-4 w-4 text-primary-foreground" />
           </div>
-          <Separator />
-          <nav className="flex-1 p-2 space-y-1">
-            {NAV_ITEMS.map(item => {
-              const isActive = page === item.key || (item.key === 'candidates' && (page === 'candidates' || page === 'candidateDetail'))
-              return (
-                <button key={item.key} onClick={() => handleNavigate(item.key)} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${isActive ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                  <item.icon className="h-4 w-4 flex-shrink-0" />
-                  {sidebarOpen && <span>{item.label}</span>}
-                </button>
-              )
-            })}
-          </nav>
-          <Separator />
-          {/* Agent Status */}
-          {sidebarOpen && (
-            <div className="p-3 space-y-2">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-1">AI Agents</p>
-              {AGENTS.map(agent => (
-                <div key={agent.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs">
-                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${activeAgentId === agent.id ? 'bg-green-500 animate-pulse' : 'bg-muted-foreground/30'}`} />
-                  <div className="min-w-0">
-                    <p className="font-medium truncate">{agent.name}</p>
-                    <p className="text-muted-foreground truncate text-[10px]">{agent.purpose}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-          <div className="p-2">
-            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="w-full flex items-center justify-center py-2 rounded-lg text-muted-foreground hover:bg-accent transition-colors">
-              {sidebarOpen ? <FiChevronLeft className="h-4 w-4" /> : <FiChevronRight className="h-4 w-4" />}
-            </button>
-          </div>
-        </aside>
-
-        {/* Main Content */}
-        <main className="flex-1 flex flex-col min-h-screen overflow-hidden">
-          {/* Top Bar */}
-          <header className="border-b border-border px-6 py-3 flex items-center justify-between bg-card/30 backdrop-blur-sm">
-            <nav className="flex items-center gap-1 text-sm">
-              {breadcrumb().map((part, i, arr) => (
-                <React.Fragment key={i}>
-                  {i > 0 && <FiChevronRight className="h-3 w-3 text-muted-foreground mx-1" />}
-                  {part.onClick && i < arr.length - 1 ? (
-                    <button onClick={part.onClick} className="text-muted-foreground hover:text-foreground transition-colors">{part.label}</button>
-                  ) : (
-                    <span className={i === arr.length - 1 ? 'font-medium text-foreground' : 'text-muted-foreground'}>{part.label}</span>
-                  )}
-                </React.Fragment>
-              ))}
-            </nav>
-            <div className="flex items-center gap-2">
-              <Label htmlFor="sample-toggle" className="text-xs text-muted-foreground">Sample Data</Label>
-              <Switch id="sample-toggle" checked={sampleData} onCheckedChange={(checked) => {
-                setSampleData(checked)
-                if (checked) {
-                  setJobs(SAMPLE_JOBS)
-                } else {
-                  setJobs([])
-                  setSelectedJobId(null)
-                  setSelectedCandidate(null)
-                  setPage('dashboard')
-                }
-              }} />
-            </div>
-          </header>
-
-          {/* Page Content */}
-          <div className="flex-1 overflow-y-auto p-6">
-            {page === 'dashboard' && (
-              <DashboardSection jobs={jobs} onNavigate={handleNavigate} />
-            )}
-            {page === 'jobs' && (
-              <JobPostingsSection jobs={jobs} onCreateJob={handleCreateJob} onSelectJob={handleSelectJob} />
-            )}
-            {page === 'candidates' && selectedJob && (
-              <CandidatesSection
-                job={selectedJob}
-                onBack={() => handleNavigate('jobs')}
-                onUpdateCandidate={handleUpdateCandidate}
-                onAddCandidate={handleAddCandidate}
-                onSelectCandidate={handleSelectCandidate}
-                activeAgentId={activeAgentId}
-                setActiveAgentId={setActiveAgentId}
-              />
-            )}
-            {page === 'candidates' && !selectedJob && (
-              <div className="space-y-6">
-                <h1 className="text-2xl font-bold">Candidates</h1>
-                <p className="text-sm text-muted-foreground">Select a job posting to view its candidates</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {jobs.filter(j => j.status === 'active').map(job => (
-                    <button key={job.id} onClick={() => handleSelectJob(job.id)} className="text-left p-4 rounded-xl border border-border bg-card/75 backdrop-blur-[16px] hover:shadow-md transition-all">
-                      <Badge variant="secondary" className="text-xs mb-2">{job.department}</Badge>
-                      <h3 className="font-semibold text-sm">{job.title}</h3>
-                      <p className="text-xs text-muted-foreground mt-1">{Array.isArray(job.candidates) ? job.candidates.length : 0} candidates</p>
-                    </button>
-                  ))}
+          {sidebarOpen && <span className="font-bold text-lg tracking-tight">HireFlow</span>}
+        </div>
+        <Separator />
+        <nav className="flex-1 p-2 space-y-1">
+          {NAV_ITEMS.map(item => {
+            const isActive = page === item.key || (item.key === 'candidates' && (page === 'candidates' || page === 'candidateDetail'))
+            return (
+              <button key={item.key} onClick={() => handleNavigate(item.key)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${isActive ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
+                <item.icon className="h-4 w-4 flex-shrink-0" />
+                {sidebarOpen && <span>{item.label}</span>}
+              </button>
+            )
+          })}
+        </nav>
+        <Separator />
+        {sidebarOpen && (
+          <div className="p-3 space-y-2">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-1">AI Agents</p>
+            {AGENTS.map(agent => (
+              <div key={agent.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs">
+                <div className={`w-2 h-2 rounded-full flex-shrink-0 ${activeAgentId === agent.id ? 'bg-green-500 animate-pulse' : 'bg-muted-foreground/30'}`} />
+                <div className="min-w-0">
+                  <p className="font-medium truncate">{agent.name}</p>
+                  <p className="text-muted-foreground truncate text-[10px]">{agent.purpose}</p>
                 </div>
               </div>
-            )}
-            {page === 'candidateDetail' && selectedCandidate && selectedJob && (
-              <CandidateDetailSection
-                candidate={selectedCandidate}
-                job={selectedJob}
-                onBack={() => { setSelectedCandidate(null); setPage('candidates') }}
-                onUpdateCandidate={handleUpdateCandidate}
-                activeAgentId={activeAgentId}
-                setActiveAgentId={setActiveAgentId}
-              />
-            )}
-            {page === 'evaluations' && (
-              <EvaluationsSection
-                jobs={jobs}
-                onUpdateCandidate={handleUpdateCandidate}
-                onSelectCandidate={handleSelectCandidateFromEval}
-              />
-            )}
+            ))}
           </div>
-        </main>
-      </div>
-    </ErrorBoundary>
+        )}
+        <div className="p-2">
+          <button onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="w-full flex items-center justify-center py-2 rounded-lg text-muted-foreground hover:bg-accent transition-colors">
+            {sidebarOpen ? <FiChevronLeft className="h-4 w-4" /> : <FiChevronRight className="h-4 w-4" />}
+          </button>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col min-h-screen overflow-hidden">
+        {/* Top Bar */}
+        <header className="border-b border-border px-6 py-3 flex items-center justify-between bg-card/30 backdrop-blur-sm">
+          <nav className="flex items-center gap-1 text-sm">
+            {breadcrumb().map((part, i, arr) => (
+              <React.Fragment key={i}>
+                {i > 0 && <FiChevronRight className="h-3 w-3 text-muted-foreground mx-1" />}
+                {part.onClick && i < arr.length - 1 ? (
+                  <button onClick={part.onClick} className="text-muted-foreground hover:text-foreground transition-colors">{part.label}</button>
+                ) : (
+                  <span className={i === arr.length - 1 ? 'font-medium text-foreground' : 'text-muted-foreground'}>{part.label}</span>
+                )}
+              </React.Fragment>
+            ))}
+          </nav>
+        </header>
+
+        {/* Page Content */}
+        <div className="flex-1 overflow-y-auto p-6">
+          {page === 'dashboard' && (
+            <DashboardSection jobs={jobs} onNavigate={handleNavigate} onSelectJob={handleSelectJob} />
+          )}
+          {page === 'jobs' && (
+            <JobPostingsSection jobs={jobs} onCreateJob={handleCreateJob} onSelectJob={handleSelectJob} />
+          )}
+          {page === 'candidates' && selectedJob && (
+            <CandidatesSection
+              job={selectedJob}
+              onBack={() => handleNavigate('jobs')}
+              onUpdateCandidate={handleUpdateCandidate}
+              onAddCandidate={handleAddCandidate}
+              onSelectCandidate={handleSelectCandidate}
+              activeAgentId={activeAgentId}
+              setActiveAgentId={setActiveAgentId}
+            />
+          )}
+          {page === 'candidates' && !selectedJob && (
+            <div className="space-y-6">
+              <h1 className="text-2xl font-bold">Candidates</h1>
+              <p className="text-sm text-muted-foreground">Select a job posting to view its candidates</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {jobs.filter(j => j.status === 'active').map(job => (
+                  <button key={job.id} onClick={() => handleSelectJob(job.id)}
+                    className="text-left p-4 rounded-xl border border-border bg-card/75 backdrop-blur-[16px] hover:shadow-md transition-all">
+                    <p className="text-xs text-muted-foreground mb-1">{job.department}</p>
+                    <h3 className="font-semibold text-sm">{job.title}</h3>
+                    <p className="text-xs text-muted-foreground mt-1">{Array.isArray(job.candidates) ? job.candidates.length : 0} candidates</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          {page === 'candidateDetail' && selectedCandidate && selectedJob && (
+            <CandidateDetailSection
+              candidate={selectedCandidate}
+              job={selectedJob}
+              onBack={() => { setSelectedCandidate(null); setPage('candidates') }}
+              onUpdateCandidate={handleUpdateCandidate}
+              activeAgentId={activeAgentId}
+              setActiveAgentId={setActiveAgentId}
+            />
+          )}
+          {page === 'evaluations' && (
+            <EvaluationsSection
+              jobs={jobs}
+              onUpdateCandidate={handleUpdateCandidate}
+              onSelectCandidate={handleSelectCandidateFromEval}
+            />
+          )}
+        </div>
+      </main>
+    </div>
   )
 }
