@@ -1,0 +1,25 @@
+{
+  "agent_id": "69a295bf42fb78f6798a6c1d",
+  "agent_name": "Interview Conductor Agent",
+  "agent_type": "json",
+  "accessor": "json",
+  "has_module_outputs": false,
+  "response_schema": {
+    "interview_status": "string",
+    "candidate_name": "string",
+    "job_title": "string",
+    "questions_asked": "number",
+    "interview_duration_minutes": "number",
+    "transcript": [
+      {
+        "speaker": "string",
+        "message": "string",
+        "question_category": "string"
+      }
+    ],
+    "key_topics_covered": ["string"],
+    "candidate_highlights": ["string"],
+    "areas_of_concern": ["string"],
+    "overall_impression": "string"
+  }
+}

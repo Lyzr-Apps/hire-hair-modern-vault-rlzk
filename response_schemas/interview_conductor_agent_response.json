@@ -1,0 +1,56 @@
+{
+  "agent_name": "Interview Conductor Agent",
+  "agent_id": "69a295bf42fb78f6798a6c1d",
+  "description": "Conducts structured AI-powered candidate interviews with role-specific questions, asks intelligent follow-ups based on responses, and saves complete transcript",
+  "agent_type": "json",
+  "accessor": "result",
+  "auto_generated": true,
+  "response_schema": {
+    "interview_status": "string",
+    "candidate_name": "string",
+    "job_title": "string",
+    "questions_asked": "number",
+    "interview_duration_minutes": "number",
+    "transcript": [
+      {
+        "speaker": "string",
+        "message": "string",
+        "question_category": "string"
+      }
+    ],
+    "key_topics_covered": [
+      "string"
+    ],
+    "candidate_highlights": [
+      "string"
+    ],
+    "areas_of_concern": [
+      "string"
+    ],
+    "overall_impression": "string"
+  },
+  "example_response": {
+    "interview_status": "sample string",
+    "candidate_name": "sample string",
+    "job_title": "sample string",
+    "questions_asked": 0,
+    "interview_duration_minutes": 0,
+    "transcript": [
+      {
+        "speaker": "sample string",
+        "message": "sample string",
+        "question_category": "sample string"
+      }
+    ],
+    "key_topics_covered": [
+      "sample string"
+    ],
+    "candidate_highlights": [
+      "sample string"
+    ],
+    "areas_of_concern": [
+      "sample string"
+    ],
+    "overall_impression": "sample string"
+  }
+}

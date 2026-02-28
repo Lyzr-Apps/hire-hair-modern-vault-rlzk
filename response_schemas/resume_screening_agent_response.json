@@ -1,0 +1,56 @@
+{
+  "agent_name": "Resume Screening Agent",
+  "agent_id": "69a295bfbb857be96e3e20e3",
+  "description": "Analyzes uploaded resumes against job description requirements, extracts skills/experience, and generates compatibility scores for candidate shortlisting",
+  "agent_type": "json",
+  "accessor": "result",
+  "auto_generated": true,
+  "response_schema": {
+    "candidate_name": "string",
+    "overall_score": "number",
+    "recommendation": "string",
+    "skills_matched": [
+      {
+        "skill": "string",
+        "match_level": "string",
+        "evidence": "string"
+      }
+    ],
+    "skills_missing": [
+      "string"
+    ],
+    "experience_years": "number",
+    "education": "string",
+    "top_strengths": [
+      "string"
+    ],
+    "concerns": [
+      "string"
+    ],
+    "summary": "string"
+  },
+  "example_response": {
+    "candidate_name": "sample string",
+    "overall_score": 0,
+    "recommendation": "sample string",
+    "skills_matched": [
+      {
+        "skill": "sample string",
+        "match_level": "sample string",
+        "evidence": "sample string"
+      }
+    ],
+    "skills_missing": [
+      "sample string"
+    ],
+    "experience_years": 0,
+    "education": "sample string",
+    "top_strengths": [
+      "sample string"
+    ],
+    "concerns": [
+      "sample string"
+    ],
+    "summary": "sample string"
+  }
+}

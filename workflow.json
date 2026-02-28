@@ -1,0 +1,46 @@
+{
+  "workflow_name": "HireFlow Employee Hiring System",
+  "nodes": [
+    {
+      "id": "input_node",
+      "type": "Input",
+      "label": "Recruiter Input",
+      "nodeCategory": "input"
+    },
+    {
+      "id": "resume_screening_agent",
+      "type": "Agent",
+      "label": "Resume Screening Agent",
+      "nodeCategory": "agent",
+      "agent_id": "69a295bfbb857be96e3e20e3"
+    },
+    {
+      "id": "interview_conductor_agent",
+      "type": "Agent",
+      "label": "Interview Conductor Agent",
+      "nodeCategory": "agent",
+      "agent_id": "69a295bf42fb78f6798a6c1d"
+    },
+    {
+      "id": "candidate_evaluator_agent",
+      "type": "Agent",
+      "label": "Candidate Evaluator Agent",
+      "nodeCategory": "agent",
+      "agent_id": "69a295d20082f39a3a37ce52"
+    }
+  ],
+  "edges": [
+    {
+      "source": "input_node",
+      "target": "resume_screening_agent"
+    },
+    {
+      "source": "resume_screening_agent",
+      "target": "interview_conductor_agent"
+    },
+    {
+      "source": "interview_conductor_agent",
+      "target": "candidate_evaluator_agent"
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "agent_name": "Candidate Evaluator Agent",
+  "agent_id": "69a295d20082f39a3a37ce52",
+  "description": "Reviews interview transcripts and resume data to generate comprehensive evaluation reports with category-wise scoring and hiring recommendations",
+  "agent_type": "json",
+  "accessor": "result",
+  "auto_generated": true,
+  "response_schema": {
+    "candidate_name": "string",
+    "job_title": "string",
+    "overall_score": "number",
+    "recommendation": "string",
+    "category_scores": {
+      "technical_skills": "number",
+      "communication": "number",
+      "experience_relevance": "number",
+      "culture_fit": "number",
+      "problem_solving": "number"
+    },
+    "strengths": [
+      "string"
+    ],
+    "areas_for_development": [
+      "string"
+    ],
+    "interview_performance_summary": "string",
+    "resume_alignment_notes": "string",
+    "detailed_evaluation": "string",
+    "red_flags": [
+      "string"
+    ],
+    "hiring_justification": "string"
+  },
+  "example_response": {
+    "candidate_name": "sample string",
+    "job_title": "sample string",
+    "overall_score": 0,
+    "recommendation": "sample string",
+    "category_scores": {
+      "technical_skills": 0,
+      "communication": 0,
+      "experience_relevance": 0,
+      "culture_fit": 0,
+      "problem_solving": 0
+    },
+    "strengths": [
+      "sample string"
+    ],
+    "areas_for_development": [
+      "sample string"
+    ],
+    "interview_performance_summary": "sample string",
+    "resume_alignment_notes": "sample string",
+    "detailed_evaluation": "sample string",
+    "red_flags": [
+      "sample string"
+    ],
+    "hiring_justification": "sample string"
+  },
+  "has_module_outputs": true,
+  "module_outputs_example": {
+    "artifact_files": [
+      {
+        "file_url": "https://example.com/file.pdf"
+      }
+    ]
+  }
+}

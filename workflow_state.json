@@ -1,0 +1,27 @@
+{
+  "workflow_name": "HireFlow Employee Hiring System",
+  "agents": {
+    "resume_screening_agent": {
+      "agent_id": "69a295bfbb857be96e3e20e3",
+      "name": "Resume Screening Agent",
+      "provider": "openai",
+      "model": "gpt-4.1",
+      "type": "json"
+    },
+    "interview_conductor_agent": {
+      "agent_id": "69a295bf42fb78f6798a6c1d",
+      "name": "Interview Conductor Agent",
+      "provider": "openai",
+      "model": "gpt-4.1",
+      "type": "json"
+    },
+    "candidate_evaluator_agent": {
+      "agent_id": "69a295d20082f39a3a37ce52",
+      "name": "Candidate Evaluator Agent",
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-5",
+      "type": "json"
+    }
+  },
+  "created_at": "2026-02-28"
+}

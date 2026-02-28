@@ -1,0 +1,27 @@
+{
+  "agent_id": "69a295d20082f39a3a37ce52",
+  "agent_name": "Candidate Evaluator Agent",
+  "agent_type": "json",
+  "accessor": "json",
+  "has_module_outputs": false,
+  "response_schema": {
+    "candidate_name": "string",
+    "job_title": "string",
+    "overall_score": "number",
+    "recommendation": "string",
+    "category_scores": {
+      "technical_skills": "number",
+      "communication": "number",
+      "experience_relevance": "number",
+      "culture_fit": "number",
+      "problem_solving": "number"
+    },
+    "strengths": ["string"],
+    "areas_for_development": ["string"],
+    "interview_performance_summary": "string",
+    "resume_alignment_notes": "string",
+    "detailed_evaluation": "string",
+    "red_flags": ["string"],
+    "hiring_justification": "string"
+  }
+}
